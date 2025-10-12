@@ -8,7 +8,7 @@ Logger::Logger(const std::string& file) {
 
     boost::log::add_console_log(
         std::clog,
-        boost::log::keywords::format = "%TimeStamp% [%File%:%%LineID%%] [%Function%] [%ThreadID%:%ProcessID%] [%Severity%] %Message%",
+        boost::log::keywords::format = "%TimeStamp% [%File%:%Line%] [%Function%] [%ThreadID%:%ProcessID%] [%Severity%] %Message%",
         boost::log::keywords::auto_flush = true
     );
 
@@ -22,6 +22,8 @@ Logger::Logger(const std::string& file) {
     );
 #endif
     boost::log::core::get()->add_global_attribute("File", boost::log::attributes::constant<std::string>(__FILE__));
+    boost::log::core::get()->add_global_attribute("Line", boost::log::attributes::constant<int>(__LINE__));
+    boost::log::core::get()->add_global_attribute("Function", boost::log::attributes::constant<std::string>(__func__));
     boost::log::add_common_attributes();
 }
 
