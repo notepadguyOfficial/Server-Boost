@@ -16,8 +16,4 @@ if [ -f "$SETTINGS_FILE" ]; then
     rm -f "$SETTINGS_FILE"
 fi
 
-mkdir "$BUILD_FOLDER"
-cd "$BUILD_FOLDER" || exit 1
-
-cmake ..
-make
+exit 1

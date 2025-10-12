@@ -16,13 +16,13 @@ find_package(Boost 1.88 REQUIRED COMPONENTS system filesystem log log_setup thre
 set(SOURCES
     src/main.cpp
     src/Server/Common/Logs/Logs.cpp
-    # Add other source files as needed
+    src/Server/Common/Container/Container.cpp
 )
 
 # Add headers
 set(HEADERS
     src/Server/Common/Logs/Logs.h
-    # Add other headers as needed
+    src/Server/Common/Container/Container.h
 )
 
 # Create the executable
@@ -32,13 +32,21 @@ add_executable(Server ${SOURCES} ${HEADERS})
 target_compile_definitions(Server PRIVATE BOOST_LOG_DYN_LINK)
 
 # Link specific Boost components to the target
-target_link_libraries(Server Boost::log Boost::log_setup Boost::system Boost::filesystem Boost::thread)
+target_link_libraries(Server
+    Boost::log
+    Boost::log_setup
+    Boost::system
+    Boost::filesystem
+    Boost::thread
+)
 
 # Specify include directories for Boost and your project's headers
-target_include_directories(Server PRIVATE ${Boost_INCLUDE_DIRS} src)
-
-# Optionally, set other include directories for your project's own headers
-target_include_directories(Server PRIVATE src/Server/Common/Logs)
+target_include_directories(Server PRIVATE
+    ${Boost_INCLUDE_DIRS}
+    src
+    src/Server/Common/Logs
+    src/Server/Common/Container
+)
 
 # Enable warnings or any extra compiler flags for C++20
 if(MSVC)
