@@ -2,6 +2,8 @@
 
 PROGRAM_PATH="build/Server"
 
+clear
+
 if [ -x "$PROGRAM_PATH" ]; then
     "$PROGRAM_PATH"
 else
