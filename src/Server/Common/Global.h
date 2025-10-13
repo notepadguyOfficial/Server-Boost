@@ -5,6 +5,8 @@
 #define SYMBOL_CHECK_PRINT "[\033[32m✓\033[0m]"
 #define SYMBOL_WRONG_PRINT "[\033[31mX\033[0m]"
 
+#define MINIMUM_POSTGRESQL_VERSION "17.0"
+
 /*
 *
 *   Usage e.g

@@ -115,16 +115,22 @@ pkg_check_modules(LIBPQXX REQUIRED libpqxx)
 set(SOURCES
     src/main.cpp
     src/Server/Common/Version.cpp
+    src/Server/Common/Helper.cpp
     src/Server/Common/Logs/Logs.cpp
     src/Server/Common/Container/Container.cpp
+    src/Server/Common/Database/Connection/Connection.cpp
 )
 
 # Add headers
 set(HEADERS
     src/Server/Common/Global.h
     src/Server/Common/Version.h
+    src/Server/Common/Helper.h
     src/Server/Common/Logs/Logs.h
     src/Server/Common/Container/Container.h
+    src/Server/Common/Database/Connection/Connection.h
+    src/Server/Common/Database/Connection/ConnectionStringBuilder.h
+    src/Server/Common/Database/Query/QueryBuilder.h
 )
 
 # Create the executable
@@ -152,6 +158,9 @@ target_include_directories(Server PRIVATE
     src/Server/Common
     src/Server/Common/Logs
     src/Server/Common/Container
+    src/Server/Common/Database
+    src/Server/Common/Database/Connection
+    src/Server/Common/Database/Query
 )
 
 # Enable warnings or any extra compiler flags for C++20
