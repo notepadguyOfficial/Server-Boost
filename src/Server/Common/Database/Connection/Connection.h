@@ -7,7 +7,12 @@
 #include <mutex>
 #include <condition_variable>
 
-class Connection {
+/**
+     * Get the singleton Connection instance.
+     *
+     * @returns Reference to the unique Connection singleton.
+     */
+    class Connection {
 public:
     static Connection& instance() {
         static Connection instance;

@@ -52,7 +52,18 @@ const std::map<boost::log::trivial::severity_level, std::string> SEVERITY_COLOR_
     {boost::log::trivial::fatal, "\033[1;31;40m"}
 };
 
-// Capture std::cout's
+/**
+ * Capture and duplicate characters written to std::cout to both a primary (console) and a secondary (file) stream buffer,
+ * preserving console formatting while writing a cleaned (ANSI escapes removed) copy to the secondary buffer.
+ *
+ * The instance buffers characters until a newline or explicit sync/destruction triggers a flush of the buffered line
+ * to the secondary buffer with ANSI escape sequences removed.
+ *
+ * @param sb1 Pointer to the primary stream buffer (console) that receives the original characters.
+ * @param sb2 Pointer to the secondary stream buffer (file) that receives a cleaned copy of buffered lines.
+ *
+ * The destructor flushes any remaining buffered content to the secondary buffer.
+ */
 class StreamBuffer : public std::streambuf {
 public:
     StreamBuffer(std::streambuf* sb1, std::streambuf* sb2)
@@ -74,6 +85,15 @@ protected:
         return c;
     }
 
+    /**
+     * Flushes internal buffer and synchronizes the primary stream buffer.
+     *
+     * Calls flush() to process any buffered characters, then invokes pubsync() on
+     * the primary underlying stream buffer. Returns 0 if the primary buffer's
+     * pubsync() reports success, -1 otherwise.
+     *
+     * @returns 0 on success, -1 on failure.
+     */
     int sync() override {
         flush();
         return (sb1_->pubsync() == 0) ? 0 : -1;
@@ -84,6 +104,13 @@ private:
     std::streambuf* sb2_; // file
     std::string buffer_;
 
+    /**
+     * Flush buffered characters to the secondary stream after removing ANSI escape sequences.
+     *
+     * If there is buffered data, this function removes ANSI color/formatting escape sequences,
+     * writes the cleaned data to the secondary stream buffer, synchronizes that stream, and
+     * clears the internal buffer. If the buffer is empty, no action is taken.
+     */
     void flush() {
         if (buffer_.empty())
             return;
@@ -95,7 +122,12 @@ private:
     }
 };
 
-class Logger {
+/**
+     * Get the process-wide Logger singleton instance.
+     *
+     * @returns Reference to the single, shared Logger instance. 
+     */
+    class Logger {
 public:
     static Logger& instance() {
         static Logger instance;
@@ -106,6 +138,15 @@ public:
         return logger;
     }
 
+    /**
+     * Toggle debug logging and update the global log filter accordingly.
+     *
+     * When enabled, the global Boost.Log filter is set to allow messages with
+     * severity debug or higher; when disabled, it is set to allow messages with
+     * severity info or higher.
+     *
+     * @param boolean `true` to enable debug-level logging, `false` to restrict logging to info and above.
+     */
     void set(bool boolean) {
         debug = boolean;
         if (debug == true)

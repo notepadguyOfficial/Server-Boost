@@ -3,6 +3,12 @@
 #include <string>
 #include <sstream>
 
+/**
+ * Build a connection string from application settings.
+ *
+ * Produces a space-separated sequence of key=value pairs for host, port, dbname, user, password, and sslmode. If a trailing space is produced it is removed before returning.
+ * @returns The formatted connection string containing the concatenated key=value pairs (for example: "host=... port=... dbname=... user=... password=... sslmode=...").
+ */
 class ConnectionStringBuilder {
 public:
     std::string build() const {

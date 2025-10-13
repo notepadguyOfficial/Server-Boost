@@ -10,6 +10,17 @@ Container::~Container() {
     delete settings;
 }
 
+/**
+ * @brief Loads configuration from the JSON file specified by `config` into `settings`.
+ *
+ * Reads configuration values from the file and updates the Container's Settings fields;
+ * if the file is missing or cannot be parsed, a default configuration is created and written.
+ *
+ * The following settings are populated with defaults when keys are absent:
+ * host ("0.0.0.0"), http_port (8080), websocket_port (9090),
+ * db_host ("localhost"), db_port (5432), db_name ("capstone"),
+ * db_user ("postgres"), db_pass ("postgres"), db_mode ("disable").
+ */
 void Container::load() {
     boost::property_tree::ptree tree;
 
@@ -42,6 +53,13 @@ void Container::load() {
     }
 }
 
+/**
+ * @brief Initialize settings with defaults and write them to the config file.
+ *
+ * Sets default network and database values on the Container's settings object
+ * and serializes them as JSON to the configured file path. On write failure a
+ * fatal log entry is emitted.
+ */
 void Container::create() {
     boost::property_tree::ptree tree;
 

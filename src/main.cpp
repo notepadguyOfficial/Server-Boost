@@ -11,6 +11,15 @@
 #include <windows.h>
 #endif
 
+/**
+ * @brief Program entry point that initializes logging, displays startup banners, verifies PostgreSQL compatibility, and runs startup checks.
+ *
+ * Initializes runtime mode from command-line arguments (recognizes "--debug"), configures the global logger, prints application/version banners and library versions, verifies the connected PostgreSQL server meets the minimum required version, and waits for user input before exiting.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Command-line argument vector; if it contains "--debug" the program enables debug mode.
+ * @return int `EXIT_SUCCESS` on normal completion, `EXIT_FAILURE` if the PostgreSQL server version is below the minimum required version.
+ */
 int main(int argc, char* argv[]) {
     bool debug_mode = false;
 

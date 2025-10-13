@@ -5,7 +5,19 @@
 #include <vector>
 #include <utility>
 
-// ORM Bullshits
+/**
+ * Fluent builder for assembling SQL statements for PostgreSQL.
+ *
+ * Constructs SELECT, INSERT, UPDATE, and DELETE statements with support for FROM, WHERE (with
+ * automatic AND/OR chaining), ORDER BY, LIMIT, SET, and VALUES clauses. Methods append SQL fragments
+ * to an internal buffer and return the builder to allow chaining. Call build() to retrieve the final
+ * SQL string and flush() to clear the buffer and reset clause state.
+ *
+ * The builder uses the provided pqxx::connection reference for identifier quoting where appropriate.
+ *
+ * @note This class performs string assembly only and does not execute queries or perform validation
+ *       beyond quoting identifiers/values where used.
+ */
 
 class QueryBuilder {
     pqxx::connection& connection;
@@ -124,6 +136,11 @@ public:
         return query.str();
     }
 
+    /**
+     * Clear the accumulated SQL and reset WHERE clause tracking.
+     *
+     * Empties the internal query buffer and resets the internal flag that indicates whether a WHERE clause has been started.
+     */
     void flush() {
         query.str("");
         query.clear();

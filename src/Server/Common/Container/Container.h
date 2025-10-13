@@ -16,7 +16,11 @@ struct Settings {
     std::string db_mode;
 };
 
-class Container {
+/**
+     * Access the singleton Container instance.
+     * @returns Reference to the global Container singleton.
+     */
+    class Container {
 public:
     static Container& instance() {
         static Container instance;
