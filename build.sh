@@ -5,11 +5,11 @@ BUILD_FOLDER="build"
 SETTINGS_FILE="Settings.json"
 
 if [ -d "$LOGS_FOLDER" ]; then
-    rm -rf Logs
+    rm -rf "$LOGS_FOLDER"
 fi
 
 if [ -d "$BUILD_FOLDER" ]; then
-    rm -rf build
+    rm -rf "$BUILD_FOLDER"
 fi
 
 if [ -f "$SETTINGS_FILE" ]; then
@@ -19,5 +19,8 @@ fi
 mkdir "$BUILD_FOLDER"
 cd "$BUILD_FOLDER" || exit 1
 
-cmake ..
-make
+if cmake .. && make; then
+    clear
+else # if error occured does not clear the screen
+    exit 1
+fi

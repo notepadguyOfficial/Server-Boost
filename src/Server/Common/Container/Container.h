@@ -8,12 +8,10 @@ struct Settings {
     std::string host;
     uint16_t http_port;
     uint16_t websocket_port;
-    std::string program_name;
     std::string db_host;
     uint16_t db_port;
     std::string db_user;
     std::string db_pass;
-    uint32_t version;
 };
 
 class Container {
