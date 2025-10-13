@@ -57,9 +57,11 @@ class StreamBuffer : public std::streambuf {
 public:
     StreamBuffer(std::streambuf* sb1, std::streambuf* sb2)
         : sb1_(sb1), sb2_(sb2) { }
+
     ~StreamBuffer() {
         flush();
     }
+
 protected:
     int overflow(int c) override {
         if (c == EOF)
@@ -71,14 +73,17 @@ protected:
             flush();
         return c;
     }
+
     int sync() override {
         flush();
         return (sb1_->pubsync() == 0) ? 0 : -1;
     }
+
 private:
     std::streambuf* sb1_; // console
     std::streambuf* sb2_; // file
     std::string buffer_;
+
     void flush() {
         if (buffer_.empty())
             return;
@@ -96,9 +101,11 @@ public:
         static Logger instance;
         return instance;
     }
+
     boost::log::sources::severity_logger<boost::log::trivial::severity_level>& get() {
         return logger;
     }
+
     void set(bool boolean) {
         debug = boolean;
         if (debug == true)
@@ -106,6 +113,7 @@ public:
         else
             boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
     }
+
 private:
     Logger();
     ~Logger();
@@ -138,14 +146,19 @@ inline std::string trim(const std::string& path) {
 
 #define LOG_TRACE(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::trace, __PROTOCOL__, fmt, ##__VA_ARGS__)
+
 #define LOG_DEBUG(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::debug, __PROTOCOL__, fmt, ##__VA_ARGS__)
+
 #define LOG_INFO(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::info, __PROTOCOL__, fmt, ##__VA_ARGS__)
+
 #define LOG_WARNING(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::warning, __PROTOCOL__, fmt, ##__VA_ARGS__)
+
 #define LOG_ERROR(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::error, __PROTOCOL__, fmt, ##__VA_ARGS__)
+    
 #define LOG_FATAL(__PROTOCOL__, fmt, ...) \
     WRITE_TO_LOG(boost::log::trivial::fatal, __PROTOCOL__, fmt, ##__VA_ARGS__)
 

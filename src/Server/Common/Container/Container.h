@@ -10,8 +10,10 @@ struct Settings {
     uint16_t websocket_port;
     std::string db_host;
     uint16_t db_port;
+    std::string db_name;
     std::string db_user;
     std::string db_pass;
+    std::string db_mode;
 };
 
 class Container {
@@ -33,5 +35,3 @@ private:
     Settings* settings = nullptr;
     const std::string config = "Settings.json"; 
 };
-
-extern Container g_container;

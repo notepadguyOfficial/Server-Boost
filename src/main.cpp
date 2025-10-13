@@ -3,6 +3,9 @@
 #include <iostream>
 #include "Global.h"
 #include "Logs.h"
+#include "Connection.h"
+#include "QueryBuilder.h"
+#include "Helper.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -19,6 +22,7 @@ int main(int argc, char* argv[]) {
     }
 
     Logger::instance().set(debug_mode);
+    auto* settings = Container::instance().get();
 #ifdef _WIN32
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTitleA(APP_NAME);
@@ -71,6 +75,20 @@ int main(int argc, char* argv[]) {
 #endif
     if (debug_mode == true)
         std::cout << "DEBUG MODE IS ENABLED" << std::endl;
+
+    // Testing
+    // Spent 7 hours to debug and fix this shit
+    // Found out before going to sleep that the reason why this shit didnt work was because I was using the old Documentation that is for Version 6.9
+    auto connection = Connection::instance().acquire();
+    QueryBuilder builder(*connection); // i forget to pass connection to this mf
+    pqxx::work txn(*connection);
+
+    // hardcoded shits
+    pqxx::result result = txn.exec("SHOW server_version;");
+    auto POSTGRESQL_VERSION = parse(std::string(result[0][0].c_str()));
+    auto MINIMUM_REQUIRED_POSTGRESQL_VERSION = parse(MINIMUM_POSTGRESQL_VERSION);
+    Connection::instance().release(connection);
+
     std::cout
         << SYMBOL_CHECK_PRINT
         << "Boost Library: "
@@ -80,8 +98,28 @@ int main(int argc, char* argv[]) {
         << "."
         << BOOST_VERSION % 100 
         << std::endl;
+
     std::cout << SYMBOL_CHECK_PRINT << "libpqxx Library: " << PQXX_VERSION << std::endl;
-    auto* settings = Container::instance().get();
+
+    if (check_version(POSTGRESQL_VERSION, MINIMUM_REQUIRED_POSTGRESQL_VERSION))
+    {
+        std::cout << SYMBOL_WRONG_PRINT << "Postgresql Server: ";
+        print_version(POSTGRESQL_VERSION);
+        std::cout << std::endl;
+
+        std::cout << SYMBOL_WRONG_PRINT << "Please use atleast Postgresql ";
+        print_version(MINIMUM_REQUIRED_POSTGRESQL_VERSION);
+        std::cout << " or above." << std::endl;
+
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        std::cout << SYMBOL_CHECK_PRINT << "Postgresql Server: ";
+        print_version(POSTGRESQL_VERSION);
+        std::cout << std::endl;
+    }
+
     std::cin.get();
     return EXIT_SUCCESS;
 }

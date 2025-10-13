@@ -28,9 +28,11 @@ void Container::load() {
         settings->http_port = tree.get<uint16_t>("http_port", 8080);
         settings->websocket_port = tree.get<uint16_t>("websocket_port", 9090);
         settings->db_host = tree.get<std::string>("db_host", "localhost");
-        settings->db_port = tree.get<uint16_t>("db_port", 3306);
-        settings->db_user = tree.get<std::string>("db_user", "root");
-        settings->db_pass = tree.get<std::string>("db_pass", "");
+        settings->db_port = tree.get<uint16_t>("db_port", 5432);
+        settings->db_name = tree.get<std::string>("db_name", "capstone");
+        settings->db_user = tree.get<std::string>("db_user", "postgres");
+        settings->db_pass = tree.get<std::string>("db_pass", "postgres");
+        settings->db_mode = tree.get<std::string>("db_mode", "disable");
 
         LOG_DEBUG(PROTOCOLS::SETTINGS, "Configuration loaded from {}.", config);
     }
@@ -47,9 +49,11 @@ void Container::create() {
     settings->http_port = 8080;
     settings->websocket_port = 9090;
     settings->db_host = "localhost";
-    settings->db_port = 3306;
-    settings->db_user = "root";
-    settings->db_pass  = "root";
+    settings->db_port = 5432;
+    settings->db_name = "capstone";
+    settings->db_user = "postgres";
+    settings->db_pass  = "postgres";
+    settings->db_mode = "disable";
 
     tree.put("host", settings->host);
     tree.put("http_port", settings->http_port);
@@ -58,7 +62,8 @@ void Container::create() {
     tree.put("db_port", settings->db_port);
     tree.put("db_user", settings->db_user);
     tree.put("db_pass", settings->db_pass);
-
+    tree.put("db_name", settings->db_name);
+    tree.put("db_mode", settings->db_mode);
     try {
         boost::property_tree::write_json(config, tree);
         LOG_DEBUG(PROTOCOLS::SETTINGS, "Default configuration file created {}.", config);
