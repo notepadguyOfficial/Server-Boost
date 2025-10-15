@@ -51,20 +51,20 @@ Connection::Connection() {
 Connection::~Connection() {
     while (!connections.empty())
         connections.pop();
-    LOG_INFO(PROTOCOLS::DATABASE, "Connection pool destroyed.");
+    LOG_INFO(Protocol::Database, "Connection pool destroyed.");
 }
 
 std::shared_ptr<pqxx::connection> Connection::create(const std::string& temp) {
     try {
         auto str = std::make_shared<pqxx::connection>(temp);
         if (!str->is_open()) {
-            LOG_ERROR(PROTOCOLS::DATABASE, "Failed to open pooled connection.");
+            LOG_ERROR(Protocol::Database, "Failed to open pooled connection.");
             return nullptr;
         }
         return str;
     }
     catch (const std::exception& e) {
-        LOG_ERROR(PROTOCOLS::DATABASE, "{}", e.what());
+        LOG_ERROR(Protocol::Database, "{}", e.what());
         return nullptr;
     }
 }

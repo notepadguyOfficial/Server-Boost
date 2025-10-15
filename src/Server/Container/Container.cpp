@@ -16,7 +16,7 @@ void Container::load() {
     std::ifstream file(config);
 
     if (!file.good()) {
-        LOG_DEBUG(PROTOCOLS::SETTINGS, "Config file not found. Creating default configuration.");
+        LOG_DEBUG(Protocol::Settings, "Config file not found. Creating default configuration.");
         create();
 
         return;
@@ -34,10 +34,10 @@ void Container::load() {
         settings->db_pass = tree.get<std::string>("db_pass", "postgres");
         settings->db_mode = tree.get<std::string>("db_mode", "disable");
 
-        LOG_DEBUG(PROTOCOLS::SETTINGS, "Configuration loaded from {}.", config);
+        LOG_DEBUG(Protocol::Settings, "Configuration loaded from {}.", config);
     }
     catch(std::exception& e) {
-        LOG_FATAL(PROTOCOLS::SETTINGS, "Error loading config [{}]", e.what());
+        LOG_FATAL(Protocol::Settings, "Error loading config [{}]", e.what());
         create();
     }
 }
@@ -66,9 +66,9 @@ void Container::create() {
     tree.put("db_mode", settings->db_mode);
     try {
         boost::property_tree::write_json(config, tree);
-        LOG_DEBUG(PROTOCOLS::SETTINGS, "Default configuration file created {}.", config);
+        LOG_DEBUG(Protocol::Settings, "Default configuration file created {}.", config);
     }
     catch (std::exception& e) {
-        LOG_FATAL(PROTOCOLS::SETTINGS, "Error writing default config [{}]", e.what());
+        LOG_FATAL(Protocol::Settings, "Error writing default config [{}]", e.what());
     }
 }

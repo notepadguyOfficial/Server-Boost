@@ -5,9 +5,10 @@ project(Server VERSION 1.0 LANGUAGES CXX)
 # Enable C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set policy for CMP0167 to avoid warnings
-cmake_policy(SET CMP0167 NEW)
+# cmake_policy(SET CMP0167 NEW)
 
 # Disable Warnings for unused functions, variable, etc..
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -105,7 +106,14 @@ add_compile_definitions(
 )
 
 # Find Boost - specify required components (we only need Boost::log and Boost::system)
-find_package(Boost 1.88 REQUIRED COMPONENTS system filesystem log log_setup thread)
+# Configure to use available Boost Library Version installed at least 1.83 or above
+find_package(Boost 1.83 REQUIRED COMPONENTS system filesystem log log_setup thread)
+
+if(NOT Boost_FOUND)
+  message(FATAL_ERROR "Boost not found.")
+endif()
+
+message(STATUS "Using Boost version ${Boost_VERSION} (>= 1.83)")
 
 # Find libpqxx separately
 find_package(PkgConfig REQUIRED)
@@ -113,24 +121,28 @@ pkg_check_modules(LIBPQXX REQUIRED libpqxx)
 
 # Add source files
 set(SOURCES
+    src/Common/Helper.cpp
+    src/Common/Logs/Logs.cpp
+    src/Common/Version.cpp
+    src/Server/Console/Console.cpp
+    src/Server/Container/Container.cpp
+    src/Server/Database/Connection/Connection.cpp
     src/main.cpp
-    src/Server/Common/Version.cpp
-    src/Server/Common/Helper.cpp
-    src/Server/Common/Logs/Logs.cpp
-    src/Server/Common/Container/Container.cpp
-    src/Server/Common/Database/Connection/Connection.cpp
 )
 
 # Add headers
 set(HEADERS
-    src/Server/Common/Global.h
-    src/Server/Common/Version.h
-    src/Server/Common/Helper.h
-    src/Server/Common/Logs/Logs.h
-    src/Server/Common/Container/Container.h
-    src/Server/Common/Database/Connection/Connection.h
-    src/Server/Common/Database/Connection/ConnectionStringBuilder.h
-    src/Server/Common/Database/Query/QueryBuilder.h
+    src/Common/Global.h
+    src/Common/Helper.h
+    src/Common/Logs/Logs.h
+    src/Common/Logs/StreamBuffer.h
+    src/Common/Logs/TextExtra.h
+    src/Common/Version.h
+    src/Server/Console/Console.h
+    src/Server/Container/Container.h
+    src/Server/Database/Connection/Connection.h
+    src/Server/Database/Connection/ConnectionStringBuilder.h
+    src/Server/Database/Query/QueryBuilder.h
 )
 
 # Create the executable
@@ -154,13 +166,14 @@ target_include_directories(Server PRIVATE
     ${Boost_INCLUDE_DIRS}
     ${LIBPQXX_INCLUDE_DIRS}
     src
+    src/Common
     src/Server
-    src/Server/Common
-    src/Server/Common/Logs
-    src/Server/Common/Container
-    src/Server/Common/Database
-    src/Server/Common/Database/Connection
-    src/Server/Common/Database/Query
+    src/Common/Logs
+    src/Server/Console
+    src/Server/Container
+    src/Server/Database
+    src/Server/Database/Connection
+    src/Server/Database/Query
 )
 
 # Enable warnings or any extra compiler flags for C++20

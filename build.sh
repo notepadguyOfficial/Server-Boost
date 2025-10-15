@@ -3,24 +3,26 @@
 LOGS_FOLDER="Logs"
 BUILD_FOLDER="build"
 SETTINGS_FILE="Settings.json"
+BUILD_LOG="build.log"
 
-if [ -d "$LOGS_FOLDER" ]; then
-    rm -rf "$LOGS_FOLDER"
-fi
+python3 tools/update/cmake.py
 
-if [ -d "$BUILD_FOLDER" ]; then
-    rm -rf "$BUILD_FOLDER"
-fi
-
-if [ -f "$SETTINGS_FILE" ]; then
-    rm -f "$SETTINGS_FILE"
-fi
+[[ -d "$LOGS_FOLDER" ]] && rm -rf "$LOGS_FOLDER"
+[[ -d "$BUILD_FOLDER" ]] && rm -rf "$BUILD_FOLDER"
+[[ -f "$SETTINGS_FILE" ]] && rm -f "$SETTINGS_FILE"
 
 mkdir "$BUILD_FOLDER"
 cd "$BUILD_FOLDER" || exit 1
 
-if cmake .. && make; then
-    clear
-else # if error occured does not clear the screen
+if cmake .. 2>&1 | tee "$BUILD_LOG"; then
+    if make 2>&1 | tee -a "$BUILD_LOG"; then
+        clear
+        mv -f compile_commands.json ..
+    else
+        echo "Make failed. See $BUILD_FOLDER/$BUILD_LOG for details."
+        exit 1
+    fi
+else
+    echo "CMake failed. See $BUILD_FOLDER/$BUILD_LOG for details."
     exit 1
 fi

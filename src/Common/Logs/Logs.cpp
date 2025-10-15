@@ -63,54 +63,45 @@ Logger::Logger() : debug(false) {
 
 Logger::~Logger() { }
 
-void Logger::custom(const boost::log::record_view& rec, boost::log::formatting_ostream& strm) {
-    const auto record_severity = rec[boost::log::trivial::severity];
-    const auto record_timestamp = boost::log::extract<boost::posix_time::ptime>("TimeStamp", rec);
-    const std::locale loc(std::cout.getloc(), new boost::posix_time::time_facet("%Y-%m-%d %H:%M:%S"));
-    auto record_protocol = boost::log::extract<PROTOCOLS>("Protocol", rec);
-    std::stringstream ss;
-
-    ss.imbue(loc);
-
-    ss << record_timestamp;
-    strm
-        << ss.str()
-        << " [\033[32m" << boost::log::extract<std::string>("File", rec) << "\033[0m:" << boost::log::extract<int>("Line", rec) << "] "
-        << "[\033[93m" << boost::log::extract<std::string>("Function", rec) << "\033[0m] "
-        << "[" << boost::log::extract<boost::log::attributes::current_thread_id::value_type>("ThreadID", rec) << "] "
-        << "[" << SEVERITY_COLOR_MAP.at(*record_severity)
-        << SEVERITY_MAP.at(*record_severity);
-    if (record_protocol.get() != PROTOCOLS::NONE) {
-        strm
-            << "\033[0m:" << SEVERITY_COLOR_MAP.at(*record_severity)
-            << PROTOCOL_MAP.at(record_protocol.get());
-    }
-    strm
-        << "\033[0m] : "
-        << SEVERITY_COLOR_MAP.at(*record_severity)
-        << rec[boost::log::expressions::smessage]
-        << "\033[0m";
+void Logger::custom(const boost::log::record_view& record, boost::log::formatting_ostream& stream) {
+    format(record, stream, true);
 }
 
-void Logger::file_custom(const boost::log::record_view& rec, boost::log::formatting_ostream& strm) {
-    const auto record_severity = rec[boost::log::trivial::severity];
-    const auto record_timestamp = boost::log::extract<boost::posix_time::ptime>("TimeStamp", rec);
-    const std::locale loc(std::cout.getloc(), new boost::posix_time::time_facet("%Y-%m-%d %H:%M:%S"));
-    auto record_protocol = boost::log::extract<PROTOCOLS>("Protocol", rec);
+void Logger::file_custom(const boost::log::record_view& record, boost::log::formatting_ostream& stream) {
+    format(record, stream, false);
+}
+
+void Logger::format(const boost::log::record_view& record, boost::log::formatting_ostream& stream, bool boolean) {
+    const auto record_severity = record[boost::log::trivial::severity];
+    const auto record_timestamp = boost::log::extract<boost::posix_time::ptime>("TimeStamp", record);
+    auto record_protocol = boost::log::extract<Protocol>("Protocol", record);
+    auto record_file = boost::log::extract<std::string>("File", record);
+    auto record_line = boost::log::extract<int>("Line", record);
+    auto record_func = boost::log::extract<std::string>("Function", record);
+    auto record_thread = boost::log::extract<boost::log::attributes::current_thread_id::value_type>("ThreadID", record);
+
+    static const std::locale locale(std::cout.getloc(), new boost::posix_time::time_facet("%Y-%m-%d %H:%M:%S"));
     std::stringstream ss;
+    ss.imbue(locale);
 
-    ss.imbue(loc);
+    ss << (record_timestamp ? *record_timestamp : boost::posix_time::second_clock::local_time());
 
-    ss << record_timestamp;
-    strm
-        << ss.str()
-        << " [" << boost::log::extract<std::string>("File", rec) << ":" << boost::log::extract<int>("Line", rec) << "] "
-        << "[" << boost::log::extract<std::string>("Function", rec) << "] "
-        << "[" << boost::log::extract<boost::log::attributes::current_thread_id::value_type>("ThreadID", rec) << "] "
-        << "[" << SEVERITY_MAP.at(*record_severity);
-    if (record_protocol.get() != PROTOCOLS::NONE)
-        strm << ":" << PROTOCOL_MAP.at(record_protocol.get());
-    strm
-        << "] : "
-        << rec[boost::log::expressions::smessage];
+    const char* green = boolean ? COLOR_GREEN : "";
+    const char* bright_yellow = boolean ? COLOR_BRIGHT_YELLOW : "";
+    const char* reset = boolean ? COLOR_RESET : "";
+    auto color = boolean ? get_severity_color(*record_severity) : "";
+    auto severity = get_severity_name(*record_severity);
+    auto protocol = get_protocol_name(*record_protocol);
+    auto message = record[boost::log::expressions::smessage];
+
+    stream << ss.str()
+        << " [" << green << record_file << reset << ":" << record_line << "]"
+        << " [" << bright_yellow << record_func << reset << "]"
+        << " [" << record_thread << "]"
+        << " [" << color << severity;
+
+    if (record_protocol.get() != Protocol::None)
+        stream << reset << ":" << color << protocol;
+
+    stream << reset << "] : " << message << reset;
 }
