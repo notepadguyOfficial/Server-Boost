@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set policy for CMP0167 to avoid warnings
-# cmake_policy(SET CMP0167 NEW)
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
 
 # Disable Warnings for unused functions, variable, etc..
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -124,9 +126,15 @@ set(SOURCES
     src/Common/Helper.cpp
     src/Common/Logs/Logs.cpp
     src/Common/Version.cpp
+    src/Server/Api/Context/Context.cpp
+    src/Server/Api/Handle/Handle.cpp
+    src/Server/Api/Models/Customer/Customer.cpp
+    src/Server/Api/Routes/Routes.cpp
     src/Server/Console/Console.cpp
     src/Server/Container/Container.cpp
     src/Server/Database/Connection/Connection.cpp
+    src/Server/Http/Http.cpp
+    src/Server/Server.cpp
     src/main.cpp
 )
 
@@ -138,11 +146,17 @@ set(HEADERS
     src/Common/Logs/StreamBuffer.h
     src/Common/Logs/TextExtra.h
     src/Common/Version.h
+    src/Server/Api/Context/Context.h
+    src/Server/Api/Handle/Handle.h
+    src/Server/Api/Models/Customer/Customer.h
+    src/Server/Api/Routes/Routes.h
     src/Server/Console/Console.h
     src/Server/Container/Container.h
     src/Server/Database/Connection/Connection.h
     src/Server/Database/Connection/ConnectionStringBuilder.h
     src/Server/Database/Query/QueryBuilder.h
+    src/Server/Http/Http.h
+    src/Server/Server.h
 )
 
 # Create the executable
@@ -169,11 +183,23 @@ target_include_directories(Server PRIVATE
     src/Common
     src/Server
     src/Common/Logs
+    src/Server/Api
     src/Server/Console
     src/Server/Container
     src/Server/Database
+    src/Server/Http
+    src/Server/Api/Context
+    src/Server/Api/Handle
+    src/Server/Api/Models
+    src/Server/Api/Routes
+    src/Server/Api/Serializers
     src/Server/Database/Connection
     src/Server/Database/Query
+    src/Server/Api/Handle/Admin
+    src/Server/Api/Handle/Customer
+    src/Server/Api/Handle/Owner
+    src/Server/Api/Handle/Staff
+    src/Server/Api/Models/Customer
 )
 
 # Enable warnings or any extra compiler flags for C++20

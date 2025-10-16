@@ -1,5 +1,10 @@
 #include "Console.h"
+#include "Container.h"
+#include "Logs.h"
 #include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -22,5 +27,6 @@ int main(int argc, char *argv[])
 #endif
     Console console(debug_mode);
     console.Show();
+    std::cin.get();
     return EXIT_SUCCESS;
 }

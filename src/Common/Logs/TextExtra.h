@@ -2,6 +2,7 @@
 #include <array>
 #include <string_view>
 #include <boost/log/trivial.hpp>
+#include <boost/filesystem.hpp>
 
 #define SYMBOL_CHECK_PRINT "[\033[32m✓\033[0m]"
 #define SYMBOL_WRONG_PRINT "[\033[31mX\033[0m]"

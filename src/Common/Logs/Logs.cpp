@@ -1,6 +1,10 @@
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include "Logs.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <regex>
+#include <vector>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 Logger::Logger() : debug(false) {
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");

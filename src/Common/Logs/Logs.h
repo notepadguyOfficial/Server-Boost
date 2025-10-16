@@ -3,20 +3,14 @@
 #include <boost/log/core.hpp>
 #include <boost/log/utility/manipulators/add_value.hpp>
 #include <boost/log/expressions.hpp>
-#include <boost/log/attributes/scoped_attribute.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
-#include <iostream>
-#include <regex>
+#include <boost/thread/mutex.hpp>
 #include <string>
 #include <chrono>
 #include <format>
-#include <fstream>
-#include <sstream>
-#include <vector>
 #include "TextExtra.h"
 #include "StreamBuffer.h"
 

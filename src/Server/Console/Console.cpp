@@ -1,7 +1,23 @@
 #include "Console.h"
+#include "Server.h"
+#include "Global.h"
+#include "Logs.h"
+
 #include <iostream>
 #include <csignal>
 #include <atomic>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <cstdlib>
+#endif
+
+#include <boost/version.hpp>
+#include <pqxx/pqxx>
+#include "Connection.h"
+#include "QueryBuilder.h"
+#include "Helper.h"
 
 void Console::Show()
 {
@@ -88,4 +104,17 @@ void Console::Show()
         print_version(POSTGRESQL_VERSION);
         std::cout << std::endl;
     }
+
+    short port = static_cast<short>(options->http_port);
+
+    try
+    {
+        Server server(port);
+    }
+    catch (const std::exception& e)
+    {
+        LOG_FATAL(Protocol::Http, "{}", e.what());
+        exit(EXIT_FAILURE);
+    }
+    
 }
