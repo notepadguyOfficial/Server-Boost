@@ -9,8 +9,8 @@ Server::Server(short port) : port(port) {
     {
         auto routes = std::make_shared<Routes>();
         auto http = Http(port, routes);
-        Handle* handle(routes);
-        handle->set()->Initialize();
+        Handle handle(routes);
+        handle.set()->Initialize();
         http.run();
     }
     catch(const std::exception& e)

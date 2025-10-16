@@ -8,8 +8,11 @@
 #include <string>
 
 class Handle {
+private:
+    std::shared_ptr<Routes> routes;
+
 public:
-    Handle(std::shared_ptr<Routes> routes) : routes(routes) { }
+    Handle(std::shared_ptr<Routes> routes) : routes(std::move(routes)) { }
     ~Handle() { }
     const Handle* get() const {
         return this;
@@ -19,7 +22,5 @@ public:
         return this;
     }
 
-private:
-    std::shared_ptr<Routes> routes;
     Handle* Initialize();
 };
